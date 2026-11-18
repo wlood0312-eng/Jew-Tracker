@@ -1,0 +1,22 @@
+MONEYTRACK APK — ONLINE BUILD (Android Studio kerak emas)
+
+1) https://github.com saytiga kirib bepul akkaunt oching yoki tizimga kiring.
+2) New repository bosing. Nomi: MoneyTrack. Public yoki Private tanlang.
+3) Create repository bosing.
+4) Ushbu ZIP faylni kompyuterda Extract qiling.
+5) GitHub repository sahifasida Add file > Upload files ni bosing.
+6) MoneyTrack papkasining ICHIDAGI barcha fayl va papkalarni yuklang. Muhim: .github papkasi ham yuklansin.
+7) Commit changes bosing.
+8) Repository ichida Actions bo'limiga o'ting.
+9) "Build MoneyTrack APK" workflow ishga tushadi. Tugashini kuting.
+10) Yashil muvaffaqiyatli build bo'lsa, workflow run ichidan Artifacts bo'limidagi
+    MoneyTrack-debug-apk faylini yuklab oling.
+11) ZIP artifactni oching. Ichida app-debug.apk bo'ladi. Uni Android telefoningizga
+    yuborib o'rnating.
+
+Agar Actions ishlamasa:
+- Repository > Settings > Actions > General bo'limida Actions ruxsat etilganini tekshiring.
+- Build logidagi qizil xato matnini yuboring.
+
+Eslatma: bu debug APK. Shaxsiy telefonda sinash uchun mo'ljallangan.
+Play Marketga chiqarish uchun keyinchalik alohida release signing kerak bo'ladi.

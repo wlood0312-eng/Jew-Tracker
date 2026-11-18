@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#0b0d18">
+<title>MoneyTrack</title>
+<style>
+:root{--bg:#0b0d18;--panel:#171a2b;--panel2:#20243a;--purple:#7547ff;--purple2:#9a76ff;--green:#35d49a;--red:#ff6b78;--muted:#a6abc4;--white:#f7f7ff}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--white);font-family:Arial,sans-serif;padding:20px 16px 92px}
+header{display:flex;align-items:center;justify-content:space-between;margin:8px 0 22px}h1{font-size:24px;margin:0} .logo{display:flex;align-items:center;gap:10px}.mark{width:38px;height:38px;border-radius:13px;background:linear-gradient(135deg,#9a62ff,#5524dc);display:grid;place-items:center;font-size:21px}
+.small{font-size:12px;color:var(--muted)}.balance{background:linear-gradient(135deg,#6935ed,#39208e);border-radius:22px;padding:20px;margin-bottom:15px;box-shadow:0 12px 35px #30156a55}
+.balance .amount{font-size:30px;font-weight:800;margin:10px 0 5px;letter-spacing:.2px}.stats{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px 0 24px}.stat,.panel{background:var(--panel);border-radius:18px;padding:16px}.stat b{display:block;font-size:18px;margin-top:8px}.green{color:var(--green)}.red{color:var(--red)}
+.section{display:flex;justify-content:space-between;align-items:center;margin:20px 2px 12px}h2{font-size:17px;margin:0}.btn{border:0;color:white;background:var(--purple);padding:13px 17px;border-radius:13px;font-weight:700;font-size:14px}.btn.secondary{background:var(--panel2);color:#ddd}.actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+input,select{width:100%;padding:14px;border:1px solid #303550;background:#111426;color:white;border-radius:12px;font-size:15px;outline:none;margin:6px 0 12px}
+label{font-size:12px;color:var(--muted)}.tabs{display:flex;gap:8px;margin:10px 0 16px}.tabs button{flex:1}.tabs .active{background:var(--purple)}
+.item{display:flex;align-items:center;justify-content:space-between;padding:13px 2px;border-bottom:1px solid #292d43}.item:last-child{border:0}.left{display:flex;align-items:center;gap:11px}.bubble{width:38px;height:38px;border-radius:13px;background:#29234b;display:grid;place-items:center}.item small{display:block;color:var(--muted);margin-top:4px}
+#form{display:none;margin-top:15px}.empty{text-align:center;color:var(--muted);padding:25px 0}.bar{height:9px;background:#292d43;border-radius:10px;overflow:hidden;margin-top:12px}.bar span{display:block;height:100%;background:linear-gradient(90deg,#8d5bff,#40d9a2);width:0}
+footer{position:fixed;bottom:0;left:0;right:0;background:#101222ee;backdrop-filter:blur(12px);display:flex;justify-content:space-around;padding:13px 8px calc(13px + env(safe-area-inset-bottom));border-top:1px solid #252941;color:var(--muted);font-size:11px}
+footer span{cursor:pointer;text-align:center}footer strong{display:block;font-size:18px;margin-bottom:3px;color:#a98cff}
+</style>
+</head>
+<body>
+<header><div class="logo"><div class="mark">▣</div><div><h1>MoneyTrack</h1><div class="small">Shaxsiy moliya nazorati</div></div></div><div>⚙️</div></header>
+<div class="balance"><div class="small" style="color:#e0d7ff">UMUMIY BALANS</div><div class="amount" id="balance">0 so'm</div><div class="small" id="monthLine">Daromad va xarajatlaringiz</div></div>
+<div class="stats">
+ <div class="stat"><div class="small">↓ DAROMAD</div><b class="green" id="income">0 so'm</b></div>
+ <div class="stat"><div class="small">↑ XARAJAT</div><b class="red" id="expense">0 so'm</b></div>
+</div>
+<div class="actions"><button class="btn" onclick="openForm('expense')">＋ Xarajat</button><button class="btn secondary" onclick="openForm('income')">＋ Daromad</button></div>
+<div id="form" class="panel">
+ <div class="tabs"><button id="expenseTab" class="btn active" onclick="setType('expense')">Xarajat</button><button id="incomeTab" class="btn secondary" onclick="setType('income')">Daromad</button></div>
+ <label>Summa (so'm)</label><input id="amount" type="number" min="1" placeholder="Masalan, 25000" inputmode="numeric">
+ <label>Kategoriya</label><select id="category"></select>
+ <label>Izoh (ixtiyoriy)</label><input id="note" maxlength="70" placeholder="Masalan, tushlik">
+ <button class="btn" style="width:100%" onclick="saveEntry()">Saqlash</button>
+</div>
+<div class="section"><h2>So'nggi operatsiyalar</h2><button class="btn secondary" onclick="clearAll()">Tozalash</button></div>
+<div class="panel" id="history"></div>
+<div class="section"><h2>Bu oy</h2></div>
+<div class="panel"><div class="small">Xarajatlar ulushi</div><div style="display:flex;justify-content:space-between;margin-top:10px"><b id="spent">0 so'm</b><span class="small" id="share">0%</span></div><div class="bar"><span id="bar"></span></div></div>
+<footer><span onclick="window.scrollTo(0,0)"><strong>⌂</strong>Bosh sahifa</span><span onclick="document.getElementById('history').scrollIntoView({behavior:'smooth'})"><strong>▤</strong>Tarix</span><span onclick="openForm('expense')"><strong>＋</strong>Qo'shish</span></footer>
+<script>
+const cats={expense:["Oziq-ovqat","Transport","Xarid","Uy-joy","Ta'lim","Ko'ngilochar","Sog'liq","Boshqa"],income:["Oylik maosh","Ish haqi","Sovg'a","Biznes","Boshqa"]};
+let entries=JSON.parse(localStorage.getItem("mt_entries")||"[]"),type="expense";
+const money=n=>new Intl.NumberFormat("uz-UZ").format(Math.round(n))+" so'm";
+function persist(){localStorage.setItem("mt_entries",JSON.stringify(entries));render()}
+function setType(t){type=t;document.getElementById("expenseTab").className=t==="expense"?"btn active":"btn secondary";document.getElementById("incomeTab").className=t==="income"?"btn active":"btn secondary";document.getElementById("category").innerHTML=cats[t].map(x=>`<option>${x}</option>`).join("")}
+function openForm(t){document.getElementById("form").style.display="block";setType(t);document.getElementById("form").scrollIntoView({behavior:"smooth"})}
+function saveEntry(){let a=Number(document.getElementById("amount").value);if(!a||a<=0){alert("To'g'ri summa kiriting");return}entries.unshift({id:Date.now(),type,amount:a,category:document.getElementById("category").value,note:document.getElementById("note").value,date:new Date().toISOString()});document.getElementById("amount").value="";document.getElementById("note").value="";document.getElementById("form").style.display="none";persist()}
+function render(){let inc=entries.filter(x=>x.type==="income").reduce((s,x)=>s+x.amount,0),exp=entries.filter(x=>x.type==="expense").reduce((s,x)=>s+x.amount,0);document.getElementById("balance").textContent=money(inc-exp);document.getElementById("income").textContent=money(inc);document.getElementById("expense").textContent=money(exp);document.getElementById("spent").textContent=money(exp);let p=inc?Math.min(100,Math.round(exp/inc*100)):0;document.getElementById("share").textContent=p+"%";document.getElementById("bar").style.width=p+"%";let h=document.getElementById("history");if(!entries.length){h.innerHTML='<div class="empty">Hozircha operatsiyalar yo‘q.<br>Daromad yoki xarajat qo‘shing.</div>';return}h.innerHTML=entries.slice(0,30).map(x=>`<div class="item"><div class="left"><div class="bubble">${x.type==="income"?"↙":"🛒"}</div><div><b>${esc(x.category)}</b><small>${new Date(x.date).toLocaleDateString("uz-UZ")} · ${esc(x.note||"Izoh yo'q")}</small></div></div><b class="${x.type==="income"?"green":"red"}">${x.type==="income"?"+":"−"}${money(x.amount)}</b></div>`).join("")}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function clearAll(){if(confirm("Barcha operatsiyalar o‘chirilsinmi?")){entries=[];persist()}}
+setType("expense");render();
+</script>
+</body></html>
